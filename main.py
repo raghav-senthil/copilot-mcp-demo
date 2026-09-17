@@ -5,6 +5,8 @@ from typing import Dict
 
 @dataclass
 class Policy:
+    """Insurance policy details for a customer."""
+
     policy_id: str
     customer_name: str
     coverage_type: str
@@ -14,6 +16,8 @@ class Policy:
 
 @dataclass
 class Claim:
+    """A claim submitted against an insurance policy."""
+
     claim_id: str
     policy_id: str
     description: str
@@ -25,6 +29,7 @@ class InsuranceApplication:
     """In-memory insurance policy and claims application."""
 
     def __init__(self) -> None:
+        """Initialize empty policy and claim registries."""
         self.policies: Dict[str, Policy] = {}
         self.claims: Dict[str, Claim] = {}
 
@@ -35,6 +40,11 @@ class InsuranceApplication:
         coverage_type: str,
         premium: float,
     ) -> Policy:
+        """Create and store an active policy.
+
+        Raises:
+            ValueError: If the policy ID already exists or the premium is invalid.
+        """
         if policy_id in self.policies:
             raise ValueError(f"Policy {policy_id} already exists")
         if premium <= 0:
@@ -51,6 +61,11 @@ class InsuranceApplication:
         description: str,
         amount: float,
     ) -> Claim:
+        """Create and store a pending claim for an active policy.
+
+        Raises:
+            ValueError: If the claim or policy is invalid, or the amount is not positive.
+        """
         if claim_id in self.claims:
             raise ValueError(f"Claim {claim_id} already exists")
         policy = self.policies.get(policy_id)
@@ -66,6 +81,11 @@ class InsuranceApplication:
         return claim
 
     def approve_claim(self, claim_id: str) -> Claim:
+        """Approve a pending claim and return its updated record.
+
+        Raises:
+            ValueError: If the claim does not exist or is no longer pending.
+        """
         claim = self.claims.get(claim_id)
         if claim is None:
             raise ValueError(f"Claim {claim_id} was not found")
@@ -77,6 +97,7 @@ class InsuranceApplication:
 
 
 def main() -> None:
+    """Run a sample policy creation, claim submission, and approval workflow."""
     app = InsuranceApplication()
 
     policy = app.create_policy(
